@@ -221,7 +221,7 @@
         let currentLevel = 1;
         let stepInLevel = 1;
         let correctAns = "";
-        let usedWords = [];
+        let usedQuestions = []; // Agora rastreamos a questão inteira para evitar repetição
         let phase = 1;
 
         function startQuiz(levelId) {
@@ -236,16 +236,17 @@
         }
 
         async function fetchQuestion() {
-            // Tópicos simplificados para Iniciante A1
-            const topic = phase === 1 ? "Basic House Introduction (CEFR A1)" : "Common Furniture and Daily Home Objects (CEFR A1)";
-            
-            // Prompt otimizado para não repetir palavras e manter nível básico
-            const prompt = `Act as an ESL Teacher for Absolute Beginners (CEFR A1). 
-            Topic: ${topic}. 
-            Task: Provide 1 simple multiple-choice question. 
-            Constraint: The correct answer MUST NOT be any of these: ${usedWords.join(", ")}. 
-            Use very basic English (e.g., 'What is this?', 'Where do you sleep?'). 
-            JSON format: {"q":"Question text","opts":["Option 1","Option 2","Option 3"],"a":"Correct Option"}`;
+            // Melhora drástica no prompt para evitar repetição e falta de sentido
+            const phaseContext = phase === 1 ? 
+                "basic rooms (kitchen, bedroom, etc)" : 
+                "furniture and house objects (sofa, fridge, lamp, etc)";
+
+            const prompt = `You are a high-tech English Teacher for beginners.
+            Topic: ${phaseContext}.
+            Difficulty: CEFR A1 (very simple).
+            Instruction: Generate 1 unique question. Do NOT repeat these questions: [${usedQuestions.join(", ")}].
+            Variation: Use different formats like 'Where is the...?', 'What do you use to...?', or 'I am in the...'.
+            JSON format: {"q": "Question Text", "opts": ["Option 1", "Option 2", "Option 3"], "a": "Correct Option"}`;
             
             try {
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -255,14 +256,16 @@
                         model: "llama-3.3-70b-versatile",
                         messages: [{role: "system", content: prompt}],
                         response_format: {type: "json_object"},
-                        temperature: 0.7 // Aumenta a variedade sem perder a precisão
+                        temperature: 0.9,
+                        presence_penalty: 0.6
                     })
                 });
 
                 const data = await res.json();
                 const quiz = JSON.parse(data.choices[0].message.content);
+                
                 correctAns = quiz.a;
-                usedWords.push(quiz.a); // Registra a palavra para evitar repetição
+                usedQuestions.push(quiz.q); // Salva a pergunta para não repetir
                 
                 document.getElementById('q-text').innerText = quiz.q;
                 const box = document.getElementById('options-box');
@@ -276,7 +279,10 @@
                     box.appendChild(b);
                 });
                 document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
-            } catch(e) { console.log("Fetch Error"); }
+            } catch(e) { 
+                console.log("Fetch Error, retrying...");
+                fetchQuestion(); 
+            }
         }
 
         function verify(sel, b) {
@@ -293,7 +299,7 @@
                 document.getElementById('btn-next').onclick = nextStep;
             } else {
                 b.classList.add('border-red-500', 'bg-red-500/10', 'text-red-400');
-                fTxt.innerText = "ERROR: SHOULD BE " + correctAns.toUpperCase();
+                fTxt.innerText = "ERROR: SYSTEM EXPECTED " + correctAns.toUpperCase();
                 fTxt.className = "text-red-400 font-bold text-lg";
                 light.className = "w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]";
                 document.getElementById('btn-next').onclick = fetchQuestion; 
@@ -320,7 +326,8 @@
                 nextNode.classList.add('current');
                 nextNode.innerHTML = '<i class="fas fa-microchip"></i>';
             } else {
-                startPhaseTwo();
+                if(phase === 1) startPhaseTwo();
+                else alert("CURSO CONCLUÍDO!");
             }
             closeQuiz();
         }
@@ -328,11 +335,11 @@
         function startPhaseTwo() {
             phase = 2;
             currentLevel = 1; 
-            // Não limpamos o usedWords aqui se quisermos evitar repetições da Fase 1 na Fase 2
+            usedQuestions = []; // Reseta para a nova fase
             
             document.getElementById('section-tag').innerText = "SYSTEM UPDATED / SEÇÃO 02";
             document.getElementById('section-title').innerHTML = 'House Objects / <span class="text-slate-500 font-light italic">Objetos da Casa</span>';
-            document.getElementById('data-bar').style.width = "60%";
+            document.getElementById('data-bar').style.width = "70%";
             
             for(let i=1; i<=5; i++) {
                 let node = document.getElementById(`node-${i}`);
@@ -344,7 +351,7 @@
                     node.innerHTML = '<i class="fas fa-lock"></i>';
                 }
             }
-            alert("FASE 2 INICIADA: Módulo de Objetos da Casa carregado.");
+            alert("FASE 2 INICIADA: Focando em Objetos e Móveis.");
         }
     </script>
 </body>
