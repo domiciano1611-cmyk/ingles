@@ -142,13 +142,13 @@
         <div class="max-w-2xl w-full">
             <div class="unit-header p-8 mb-16 flex justify-between items-end">
                 <div>
-                    <p class="text-cyan-400 font-bold uppercase text-[10px] tracking-[0.3em] mb-2">SYSTEM READY / SEÇÃO 01</p>
-                    <h2 class="text-3xl font-bold text-white">The House / <span class="text-slate-500 font-light italic">A Casa</span></h2>
+                    <p id="section-tag" class="text-cyan-400 font-bold uppercase text-[10px] tracking-[0.3em] mb-2">SYSTEM READY / SEÇÃO 01</p>
+                    <h2 id="section-title" class="text-3xl font-bold text-white">The House / <span class="text-slate-500 font-light italic">A Casa</span></h2>
                 </div>
                 <div class="text-right">
                     <span class="text-xs text-slate-500 block mb-1">DATA STATUS</span>
                     <div class="h-1 w-24 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-cyan-500 w-1/3 animate-pulse"></div>
+                        <div id="data-bar" class="h-full bg-cyan-500 w-1/3 animate-pulse"></div>
                     </div>
                 </div>
             </div>
@@ -202,7 +202,7 @@
             <h2 id="q-text" class="text-4xl font-bold text-white mb-12 leading-tight">Initializing...</h2>
             
             <div id="options-box" class="grid gap-4">
-                </div>
+            </div>
         </div>
         
         <div id="quiz-footer" class="w-full border-t border-white/10 p-10 flex justify-center translate-y-full transition-transform bg-black/80 backdrop-blur-xl fixed bottom-0">
@@ -222,6 +222,7 @@
         let stepInLevel = 1;
         let correctAns = "";
         let usedWords = [];
+        let phase = 1; // Controle de fase
 
         function startQuiz(levelId) {
             if(levelId > currentLevel) return;
@@ -235,7 +236,9 @@
         }
 
         async function fetchQuestion() {
-            const prompt = `Teacher Mode. Topic: House Objects. Step ${stepInLevel}/5. English Only. No repeats from: ${usedWords.join(",")}. JSON: {"q":"...","opts":["...","...","..."],"a":"..."}`;
+            // Ajusta o tópico conforme a fase
+            const topic = phase === 1 ? "Basic Greetings and House Intro" : "Specific House Objects and Furniture";
+            const prompt = `Teacher Mode. Topic: ${topic}. Step ${stepInLevel}/5. English Only. No repeats from: ${usedWords.join(",")}. JSON: {"q":"...","opts":["...","...","..."],"a":"..."}`;
             
             try {
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -300,15 +303,43 @@
         }
 
         function unlockNextLevel() {
-            alert("Sincronização Completa. Próximo módulo liberado.");
             currentLevel++;
             const nextNode = document.getElementById(`node-${currentLevel}`);
+            
             if(nextNode) {
+                alert("Sincronização Completa. Próximo módulo liberado.");
                 nextNode.classList.remove('locked');
                 nextNode.classList.add('current');
                 nextNode.innerHTML = '<i class="fas fa-microchip"></i>';
+            } else {
+                // Se não houver mais nodes, avança para a Fase 2
+                startPhaseTwo();
             }
             closeQuiz();
+        }
+
+        function startPhaseTwo() {
+            phase = 2;
+            currentLevel = 1; // Reinicia os nodes para a nova fase
+            usedWords = [];
+            
+            // Atualiza UI para Fase 2
+            document.getElementById('section-tag').innerText = "SYSTEM UPDATED / SEÇÃO 02";
+            document.getElementById('section-title').innerHTML = 'House Objects / <span class="text-slate-500 font-light italic">Objetos da Casa</span>';
+            document.getElementById('data-bar').style.width = "60%";
+            
+            // Reseta visual dos nodes
+            for(let i=1; i<=5; i++) {
+                let node = document.getElementById(`node-${i}`);
+                if(i === 1) {
+                    node.className = "node current";
+                    node.innerHTML = '<i class="fas fa-microchip"></i>';
+                } else {
+                    node.className = `node locked ${i % 2 === 0 ? 'transform translate-x-12' : 'transform -translate-x-8'}`;
+                    node.innerHTML = '<i class="fas fa-lock"></i>';
+                }
+            }
+            alert("FASE 2 INICIADA: Módulo de Objetos da Casa carregado.");
         }
     </script>
 </body>
