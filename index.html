@@ -3,98 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LingoFlow - English Learning</title>
+    <title>LingoFlow - Neural Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
         
-        body { font-family: 'Nunito', sans-serif; background-color: #fff; color: #4b4b4b; overflow-x: hidden; }
-        
-        .sidebar-item { transition: all 0.2s; border: 2px solid transparent; }
-        .sidebar-item:hover { background-color: #e5e7eb; border-radius: 12px; }
-        .sidebar-active { background-color: #ddf4ff; border: 2px solid #84d8ff; border-radius: 12px; color: #1899d6 !important; }
+        :root {
+            --bg-dark: #0a0a0c;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-        .unit-header { background-color: #58cc02; color: white; border-radius: 15px; }
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: #e2e8f0; 
+            overflow-x: hidden; 
+        }
 
-        /* Estilo das Bolinhas do Duolingo */
+        /* Sidebar Futurista */
+        .sidebar-item { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent;
+            margin: 4px 0;
+        }
+        .sidebar-item:hover { background: var(--glass); color: var(--accent-cyan); }
+        .sidebar-active { 
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+            border-left: 3px solid var(--accent-purple);
+            color: var(--accent-purple) !important;
+        }
+
+        /* Unit Header - Glassmorphism */
+        .unit-header { 
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+
+        /* Estilo dos Nodes - "Orbital" */
         .node {
-            width: 70px; height: 60px;
-            border-radius: 50%;
+            width: 80px; height: 80px;
+            border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
             font-size: 24px; cursor: pointer;
-            position: relative; transition: transform 0.1s;
-            box-shadow: 0 8px 0 #46a302;
-            background-color: #58cc02; color: white;
-            margin: 20px auto;
+            position: relative; transition: all 0.4s;
+            background: var(--bg-dark);
+            border: 2px solid var(--accent-purple);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            color: var(--accent-purple);
+            margin: 30px auto;
         }
-        .node:active { transform: translateY(4px); box-shadow: 0 4px 0 #46a302; }
-        .node.locked { background-color: #e5e5e5; box-shadow: 0 8px 0 #afafaf; color: #afafaf; cursor: not-allowed; }
-        .node.current { background-color: #58cc02; box-shadow: 0 8px 0 #46a302; animation: bounce 2s infinite; }
+        .node:hover:not(.locked) {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+            background: var(--accent-purple);
+            color: white;
+        }
+        .node.locked { 
+            border-color: #334155; 
+            color: #334155; 
+            box-shadow: none; 
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .node.current { 
+            animation: pulse-cyan 2s infinite; 
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
         
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        @keyframes pulse-cyan {
+            0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(6, 182, 212, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
         }
 
-        /* Overlay do Quiz */
+        /* Caminho de Conexão */
+        .path-line {
+            width: 2px; height: 60px;
+            background: linear-gradient(to bottom, var(--accent-purple), #334155);
+            margin: -20px auto;
+        }
+
+        /* Quiz Overlay - Estilo Terminal */
         #quiz-overlay {
-            position: fixed; inset: 0; background: white; z-index: 100;
+            position: fixed; inset: 0; 
+            background: rgba(10, 10, 12, 0.98); 
+            z-index: 100;
             display: none; flex-direction: column; align-items: center; justify-content: center;
         }
+
+        .btn-option {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            transition: all 0.2s;
+        }
+        .btn-option:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .cyber-btn {
+            background: var(--accent-purple);
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            transition: all 0.3s;
+        }
+        .cyber-btn:hover { filter: brightness(1.2); transform: scale(1.05); }
     </style>
 </head>
 <body class="flex">
 
-    <nav class="w-64 h-screen border-r-2 border-gray-200 p-4 flex flex-col fixed left-0 bg-white">
-        <h1 class="text-[#58cc02] text-3xl font-800 mb-8 px-4 font-extrabold">lingoflow</h1>
+    <nav class="w-64 h-screen border-r border-white/10 p-6 flex flex-col fixed left-0">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <div class="w-8 h-8 bg-cyan-500 rounded-lg animate-pulse"></div>
+            <h1 class="text-white text-2xl font-bold tracking-tighter">LINGOFLOW</h1>
+        </div>
         
-        <div class="space-y-2">
-            <div class="sidebar-item sidebar-active p-3 flex items-center gap-4 cursor-pointer">
-                <i class="fas fa-home text-xl"></i> <span class="font-bold uppercase tracking-wide text-sm">Aprender</span>
+        <div class="space-y-1">
+            <div class="sidebar-item sidebar-active p-4 flex items-center gap-4 cursor-pointer rounded-xl">
+                <i class="fas fa-terminal text-lg"></i> <span class="font-medium text-sm tracking-wide">CONEXÃO</span>
             </div>
-            <div class="sidebar-item p-3 flex items-center gap-4 cursor-pointer text-gray-500">
-                <i class="fas fa-book text-xl"></i> <span class="font-bold uppercase tracking-wide text-sm">Letras</span>
+            <div class="sidebar-item p-4 flex items-center gap-4 cursor-pointer text-slate-500 rounded-xl">
+                <i class="fas fa-database text-lg"></i> <span class="font-medium text-sm tracking-wide">MÓDULOS</span>
             </div>
-            <div class="sidebar-item p-3 flex items-center gap-4 cursor-pointer text-gray-500">
-                <i class="fas fa-dumbbell text-xl"></i> <span class="font-bold uppercase tracking-wide text-sm">Praticar</span>
-            </div>
-            <div class="sidebar-item p-3 flex items-center gap-4 cursor-pointer text-gray-500">
-                <i class="fas fa-shield-alt text-xl"></i> <span class="font-bold uppercase tracking-wide text-sm">Ligas</span>
+            <div class="sidebar-item p-4 flex items-center gap-4 cursor-pointer text-slate-500 rounded-xl">
+                <i class="fas fa-brain text-lg"></i> <span class="font-medium text-sm tracking-wide">NEURAL</span>
             </div>
         </div>
     </nav>
 
-    <main class="ml-64 flex-1 p-8 flex justify-center">
+    <main class="ml-64 flex-1 p-12 flex justify-center bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-purple-900/10 via-transparent to-transparent">
         
         <div class="max-w-2xl w-full">
-            <div class="unit-header p-5 mb-12 flex justify-between items-center shadow-md">
+            <div class="unit-header p-8 mb-16 flex justify-between items-end">
                 <div>
-                    <p class="font-bold opacity-80 uppercase text-xs">Seção 1, Unidade 1</p>
-                    <h2 class="text-xl font-extrabold">The House / A Casa</h2>
+                    <p class="text-cyan-400 font-bold uppercase text-[10px] tracking-[0.3em] mb-2">SYSTEM READY / SEÇÃO 01</p>
+                    <h2 class="text-3xl font-bold text-white">The House / <span class="text-slate-500 font-light italic">A Casa</span></h2>
                 </div>
-                <button class="bg-[#46a302] p-3 rounded-xl font-bold uppercase text-sm border-b-4 border-[#3a8602]">Guia</button>
+                <div class="text-right">
+                    <span class="text-xs text-slate-500 block mb-1">DATA STATUS</span>
+                    <div class="h-1 w-24 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-cyan-500 w-1/3 animate-pulse"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="flex flex-col items-center">
-                <div id="node-1" class="node current" onclick="startQuiz(1)"><i class="fas fa-star"></i></div>
-                <div id="node-2" class="node locked ml-12" onclick="startQuiz(2)"><i class="fas fa-book"></i></div>
-                <div id="node-3" class="node locked mr-8" onclick="startQuiz(3)"><i class="fas fa-home"></i></div>
-                <div id="node-4" class="node locked" onclick="startQuiz(4)"><i class="fas fa-chest"></i></div>
-                <div id="node-5" class="node locked ml-10" onclick="startQuiz(5)"><i class="fas fa-check"></i></div>
+                <div id="node-1" class="node current" onclick="startQuiz(1)"><i class="fas fa-microchip"></i></div>
+                <div class="path-line"></div>
+                <div id="node-2" class="node locked transform translate-x-12" onclick="startQuiz(2)"><i class="fas fa-lock"></i></div>
+                <div class="path-line"></div>
+                <div id="node-3" class="node locked transform -translate-x-8" onclick="startQuiz(3)"><i class="fas fa-lock"></i></div>
+                <div class="path-line"></div>
+                <div id="node-4" class="node locked" onclick="startQuiz(4)"><i class="fas fa-lock"></i></div>
+                <div class="path-line"></div>
+                <div id="node-5" class="node locked transform translate-x-10" onclick="startQuiz(5)"><i class="fas fa-shield-virus"></i></div>
             </div>
         </div>
 
-        <div class="w-80 ml-8 hidden lg:block">
-            <div class="border-2 border-gray-200 rounded-2xl p-4 mb-4">
-                <h3 class="font-bold text-gray-400 mb-4 flex justify-between">DIVISÃO AMETISTA <span class="text-blue-400">VER DIVISÃO</span></h3>
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
-                        <i class="fas fa-feather-alt text-2xl"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold text-red-500">Sua posição: 17º</p>
-                        <p class="text-xs text-gray-400">Você caiu pra zona de rebaixamento!</p>
+        <div class="w-80 ml-12 hidden lg:block">
+            <div class="border border-white/10 rounded-3xl p-6 bg-white/5 backdrop-blur-sm">
+                <h3 class="text-xs font-bold text-slate-500 mb-6 tracking-widest uppercase">Rank Neural</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 group">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-cyan-400 p-[1px]">
+                            <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                                <i class="fas fa-user text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-bold text-white">Você</p>
+                            <p class="text-[10px] text-slate-500 italic">Posição 17 de 500</p>
+                        </div>
+                        <span class="text-cyan-400 text-xs">840 XP</span>
                     </div>
                 </div>
             </div>
@@ -102,22 +188,30 @@
     </main>
 
     <div id="quiz-overlay">
-        <div class="w-full max-w-xl p-6">
-            <div class="flex items-center gap-4 mb-8">
-                <button onclick="closeQuiz()" class="text-gray-400 text-2xl">✕</button>
-                <div class="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
-                    <div id="quiz-progress" class="h-full bg-[#58cc02] transition-all" style="width: 10%"></div>
+        <div class="w-full max-w-2xl p-8">
+            <div class="flex items-center gap-6 mb-16">
+                <button onclick="closeQuiz()" class="text-slate-500 hover:text-white transition-colors text-xl">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="flex-1 h-[2px] bg-slate-800">
+                    <div id="quiz-progress" class="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4] transition-all duration-700" style="width: 10%"></div>
                 </div>
             </div>
             
-            <h2 id="q-text" class="text-2xl font-bold mb-8">Loading question...</h2>
-            <div id="options-box" class="grid gap-3"></div>
+            <p class="text-cyan-400 text-xs font-bold tracking-[0.4em] uppercase mb-4">Neural Query:</p>
+            <h2 id="q-text" class="text-4xl font-bold text-white mb-12 leading-tight">Initializing...</h2>
+            
+            <div id="options-box" class="grid gap-4">
+                </div>
         </div>
         
-        <div id="quiz-footer" class="w-full border-t-2 border-gray-100 p-8 flex justify-center translate-y-full transition-transform bg-white">
-            <div class="max-w-xl w-full flex justify-between items-center">
-                <span id="feedback-txt" class="text-xl font-bold"></span>
-                <button id="btn-next" class="bg-[#58cc02] text-white px-10 py-3 rounded-2xl font-extrabold border-b-4 border-[#46a302] hover:brightness-110">CONTINUAR</button>
+        <div id="quiz-footer" class="w-full border-t border-white/10 p-10 flex justify-center translate-y-full transition-transform bg-black/80 backdrop-blur-xl fixed bottom-0">
+            <div class="max-w-2xl w-full flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div id="status-light" class="w-3 h-3 rounded-full bg-slate-500"></div>
+                    <span id="feedback-txt" class="text-lg font-bold tracking-wide uppercase">Aguardando Input</span>
+                </div>
+                <button id="btn-next" class="cyber-btn bg-purple-600 text-white px-12 py-4 font-bold text-sm tracking-widest">NEXT_MODULE</button>
             </div>
         </div>
     </div>
@@ -130,7 +224,7 @@
         let usedWords = [];
 
         function startQuiz(levelId) {
-            if(levelId > currentLevel) return; // Bloqueado
+            if(levelId > currentLevel) return;
             document.getElementById('quiz-overlay').style.display = 'flex';
             stepInLevel = 1;
             fetchQuestion();
@@ -143,49 +237,54 @@
         async function fetchQuestion() {
             const prompt = `Teacher Mode. Topic: House Objects. Step ${stepInLevel}/5. English Only. No repeats from: ${usedWords.join(",")}. JSON: {"q":"...","opts":["...","...","..."],"a":"..."}`;
             
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: {"Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json"},
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: [{role: "system", content: prompt}],
-                    response_format: {type: "json_object"}
-                })
-            });
+            try {
+                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {"Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [{role: "system", content: prompt}],
+                        response_format: {type: "json_object"}
+                    })
+                });
 
-            const data = await res.json();
-            const quiz = JSON.parse(data.choices[0].message.content);
-            correctAns = quiz.a;
-            usedWords.push(quiz.a);
-            
-            document.getElementById('q-text').innerText = quiz.q;
-            const box = document.getElementById('options-box');
-            box.innerHTML = "";
-            
-            quiz.opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = "w-full p-4 text-left border-2 border-gray-200 rounded-2xl font-bold text-gray-700 hover:bg-gray-50 border-b-4";
-                b.innerText = o;
-                b.onclick = () => verify(o, b);
-                box.appendChild(b);
-            });
-            document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
+                const data = await res.json();
+                const quiz = JSON.parse(data.choices[0].message.content);
+                correctAns = quiz.a;
+                usedWords.push(quiz.a);
+                
+                document.getElementById('q-text').innerText = quiz.q;
+                const box = document.getElementById('options-box');
+                box.innerHTML = "";
+                
+                quiz.opts.forEach(o => {
+                    const b = document.createElement('button');
+                    b.className = "btn-option w-full p-6 text-left rounded-2xl font-medium text-slate-300 hover:text-cyan-400 transition-all";
+                    b.innerText = o;
+                    b.onclick = () => verify(o, b);
+                    box.appendChild(b);
+                });
+                document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
+            } catch(e) { console.log("Fetch Error"); }
         }
 
         function verify(sel, b) {
             const footer = document.getElementById('quiz-footer');
             const fTxt = document.getElementById('feedback-txt');
+            const light = document.getElementById('status-light');
             footer.classList.remove('translate-y-full');
 
             if(sel === correctAns) {
-                b.classList.add('border-green-500', 'bg-green-100', 'text-green-700');
-                fTxt.innerText = "Muito bem!";
-                fTxt.className = "text-green-600 font-bold text-xl";
+                b.classList.add('border-cyan-500', 'bg-cyan-500/10', 'text-cyan-400');
+                fTxt.innerText = "ACCESS GRANTED";
+                fTxt.className = "text-cyan-400 font-bold text-lg";
+                light.className = "w-3 h-3 rounded-full bg-cyan-500 shadow-[0_0_10px_#06b6d4]";
                 document.getElementById('btn-next').onclick = nextStep;
             } else {
-                b.classList.add('border-red-500', 'bg-red-100', 'text-red-700');
-                fTxt.innerText = "Resposta correta: " + correctAns;
-                fTxt.className = "text-red-600 font-bold text-xl";
+                b.classList.add('border-red-500', 'bg-red-500/10', 'text-red-400');
+                fTxt.innerText = "ERROR: SHOULD BE " + correctAns.toUpperCase();
+                fTxt.className = "text-red-400 font-bold text-lg";
+                light.className = "w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]";
                 document.getElementById('btn-next').onclick = fetchQuestion; 
             }
         }
@@ -201,12 +300,13 @@
         }
 
         function unlockNextLevel() {
-            alert("Unidade Completa! Próxima fase liberada.");
+            alert("Sincronização Completa. Próximo módulo liberado.");
             currentLevel++;
             const nextNode = document.getElementById(`node-${currentLevel}`);
             if(nextNode) {
                 nextNode.classList.remove('locked');
                 nextNode.classList.add('current');
+                nextNode.innerHTML = '<i class="fas fa-microchip"></i>';
             }
             closeQuiz();
         }
