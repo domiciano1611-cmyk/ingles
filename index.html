@@ -114,6 +114,19 @@
             transition: all 0.3s;
         }
         .cyber-btn:hover { filter: brightness(1.2); transform: scale(1.05); }
+
+        /* Estilo da Ajuda de Tradução */
+        #hint-box {
+            display: none;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px dashed var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="flex">
@@ -198,7 +211,15 @@
                 </div>
             </div>
             
-            <p class="text-cyan-400 text-xs font-bold tracking-[0.4em] uppercase mb-4">Neural Query:</p>
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-cyan-400 text-xs font-bold tracking-[0.4em] uppercase">Neural Query:</p>
+                <button onclick="showTranslation()" class="text-cyan-400 hover:text-white transition-all">
+                    <i class="fas fa-lightbulb mr-2"></i><span class="text-[10px] font-bold uppercase tracking-widest">Ver Tradução</span>
+                </button>
+            </div>
+
+            <div id="hint-box"></div>
+
             <h2 id="q-text" class="text-4xl font-bold text-white mb-12 leading-tight">Initializing...</h2>
             
             <div id="options-box" class="grid gap-4">
@@ -221,8 +242,15 @@
         let currentLevel = 1;
         let stepInLevel = 1;
         let correctAns = "";
-        let usedQuestions = []; // Agora rastreamos a questão inteira para evitar repetição
+        let currentTranslation = ""; // Armazena tradução atual
+        let usedQuestions = []; 
         let phase = 1;
+
+        function showTranslation() {
+            const hint = document.getElementById('hint-box');
+            hint.innerText = currentTranslation;
+            hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+        }
 
         function startQuiz(levelId) {
             if(levelId > currentLevel) return;
@@ -233,20 +261,21 @@
 
         function closeQuiz() {
             document.getElementById('quiz-overlay').style.display = 'none';
+            document.getElementById('hint-box').style.display = 'none';
         }
 
         async function fetchQuestion() {
-            // Melhora drástica no prompt para evitar repetição e falta de sentido
+            document.getElementById('hint-box').style.display = 'none';
             const phaseContext = phase === 1 ? 
                 "basic rooms (kitchen, bedroom, etc)" : 
                 "furniture and house objects (sofa, fridge, lamp, etc)";
 
+            // Prompt atualizado para pedir a tradução
             const prompt = `You are a high-tech English Teacher for beginners.
             Topic: ${phaseContext}.
             Difficulty: CEFR A1 (very simple).
-            Instruction: Generate 1 unique question. Do NOT repeat these questions: [${usedQuestions.join(", ")}].
-            Variation: Use different formats like 'Where is the...?', 'What do you use to...?', or 'I am in the...'.
-            JSON format: {"q": "Question Text", "opts": ["Option 1", "Option 2", "Option 3"], "a": "Correct Option"}`;
+            Instruction: Generate 1 unique question. Do NOT repeat these: [${usedQuestions.join(", ")}].
+            JSON format: {"q": "Question Text", "tr": "Tradução para Português do Brasil", "opts": ["Option 1", "Option 2", "Option 3"], "a": "Correct Option"}`;
             
             try {
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -256,8 +285,7 @@
                         model: "llama-3.3-70b-versatile",
                         messages: [{role: "system", content: prompt}],
                         response_format: {type: "json_object"},
-                        temperature: 0.9,
-                        presence_penalty: 0.6
+                        temperature: 0.9
                     })
                 });
 
@@ -265,7 +293,8 @@
                 const quiz = JSON.parse(data.choices[0].message.content);
                 
                 correctAns = quiz.a;
-                usedQuestions.push(quiz.q); // Salva a pergunta para não repetir
+                currentTranslation = quiz.tr; // Salva a tradução
+                usedQuestions.push(quiz.q); 
                 
                 document.getElementById('q-text').innerText = quiz.q;
                 const box = document.getElementById('options-box');
@@ -280,7 +309,6 @@
                 });
                 document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
             } catch(e) { 
-                console.log("Fetch Error, retrying...");
                 fetchQuestion(); 
             }
         }
@@ -335,7 +363,7 @@
         function startPhaseTwo() {
             phase = 2;
             currentLevel = 1; 
-            usedQuestions = []; // Reseta para a nova fase
+            usedQuestions = []; 
             
             document.getElementById('section-tag').innerText = "SYSTEM UPDATED / SEÇÃO 02";
             document.getElementById('section-title').innerHTML = 'House Objects / <span class="text-slate-500 font-light italic">Objetos da Casa</span>';
