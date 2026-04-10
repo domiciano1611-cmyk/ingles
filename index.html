@@ -135,12 +135,11 @@
             max-width: 400px;
         }
 
-            /* Efeito de brilho no hover do avatar */
-.user-badge:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
-}
+        .user-badge:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row">
@@ -176,55 +175,42 @@
         </div>
     </nav>
 
-    flex-col items-center bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-purple-900/10 via-transparent to-transparent">
-    
-    <div class="hidden md:flex w-full max-w-6xl justify-between items-center mb-16">
+    <main class="flex-1 p-6 md:p-12 md:ml-64 flex flex-col items-center bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-purple-900/10 via-transparent to-transparent">
         
-        <div class="unit-header p-8 flex flex-row justify-between items-end gap-6 flex-grow mr-8">
-            <div>
-                <p id="section-tag" class="text-cyan-400 font-bold uppercase text-[9px] tracking-[0.3em] mb-1">SYSTEM READY / SEÇÃO 01</p>
-                <h2 id="section-title" class="text-3xl font-bold text-white leading-tight">The House / <span class="text-slate-500 font-light italic">A Casa</span></h2>
+        <div class="w-full max-w-5xl flex flex-col md:flex-row justify-between items-center md:items-stretch gap-6 mb-8 md:mb-16">
+            
+            <div class="unit-header flex-1 p-6 md:p-8 flex flex-row justify-between items-center gap-4 w-full">
+                <div>
+                    <p id="section-tag" class="text-cyan-400 font-bold uppercase text-[9px] tracking-[0.3em] mb-1">SYSTEM READY / SEÇÃO 01</p>
+                    <h2 id="section-title" class="text-2xl md:text-3xl font-bold text-white">The House / <span class="text-slate-500 font-light italic">A Casa</span></h2>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-500 block mb-1">DATA STATUS</span>
+                    <div class="h-1 w-20 md:w-24 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="data-bar" class="h-full bg-cyan-500 w-1/3 animate-pulse"></div>
+                    </div>
+                </div>
             </div>
-            <div class="text-right">
-                <span class="text-[10px] text-slate-500 block mb-1">DATA STATUS</span>
-                <div class="h-1 w-24 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="data-bar" class="h-full bg-cyan-500 w-1/3 animate-pulse"></div>
+
+            <div class="user-badge flex items-center gap-4 p-4 pr-8 border border-white/10 rounded-3xl bg-white/5 backdrop-blur-md transition-all cursor-pointer h-full self-center">
+                <div class="relative">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center text-white shadow-lg overflow-hidden border border-white/20">
+                        <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=LingoMax&backgroundColor=b6e3f4,c0aede" alt="Avatar" class="w-10 h-10">
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-[#0a0a0c] rounded-full"></div>
+                </div>
+                <div>
+                    <p class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest leading-none mb-1">Neural Operative</p>
+                    <h4 class="text-sm font-bold text-white tracking-tight">Cyber_User_01</h4>
+                    <div class="flex items-center gap-2 mt-1">
+                        <i class="fas fa-crown text-[10px] text-yellow-500"></i>
+                        <span class="text-[10px] text-slate-400 font-medium">RANK: <span class="text-white">PLATINUM II</span></span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="user-badge flex items-center gap-4 p-2 pr-6 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-md transition-all cursor-pointer user-badge h-24">
-            <div class="relative">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center text-white shadow-lg overflow-hidden border border-white/20">
-                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=LingoMax&backgroundColor=b6e3f4,c0aede" alt="Avatar" class="w-10 h-10">
-                </div>
-                <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-[#0a0a0c] rounded-full"></div>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest leading-none mb-1">Neural Operative</p>
-                <h4 class="text-sm font-bold text-white tracking-tight">Cyber_User_01</h4>
-                <div class="flex items-center gap-2 mt-1 justify-end">
-                    <i class="fas fa-crown text-[10px] text-yellow-500"></i>
-                    <span class="text-[10px] text-slate-400 font-medium">RANK: <span class="text-white">PLATINUM II</span></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="max-w-2xl w-full">
-        <div class="flex flex-col items-center py-4">
-    <div>
-        <p id="section-tag" class="text-cyan-400 font-bold uppercase text-[9px] tracking-[0.3em] mb-1">SYSTEM READY / SEÇÃO 01</p>
-        <h2 id="section-title" class="text-2xl md:text-3xl font-bold text-white">The House / <span class="text-slate-500 font-light italic">A Casa</span></h2>
-    </div>
-    <div class="text-right">
-        <span class="text-[10px] text-slate-500 block mb-1">DATA STATUS</span>
-        <div class="h-1 w-20 md:w-24 bg-slate-800 rounded-full overflow-hidden">
-            <div id="data-bar" class="h-full bg-cyan-500 w-1/3 animate-pulse"></div>
-        </div>
-    </div>
-</div>
-
+        <div class="max-w-2xl w-full">
             <div class="flex flex-col items-center py-4">
                 <div id="node-1" class="node current" onclick="startQuiz(1)"><i class="fas fa-microchip"></i></div>
                 <div class="path-line"></div>
@@ -275,12 +261,11 @@
                 </button>
             </div>
 
-            <div id="hint-box"></div>
+            <div id="hint-box" style="display:none; color:#06b6d4; margin-bottom:10px; font-size:14px;"></div>
 
             <h2 id="q-text" class="text-2xl md:text-4xl font-bold text-white mb-8 md:mb-12 leading-tight">Carregando...</h2>
             
-            <div id="options-box" class="grid gap-3 md:gap-4">
-                </div>
+            <div id="options-box" class="grid gap-3 md:gap-4"></div>
         </div>
         
         <div id="quiz-footer" class="w-full border-t border-white/10 p-6 md:p-10 flex justify-center translate-y-full transition-transform bg-black/90 backdrop-blur-xl fixed bottom-0 left-0">
@@ -295,7 +280,6 @@
     </div>
 
     <script>
-        // MANTENDO EXATAMENTE SUA LÓGICA FUNCIONAL
         const API_KEY = "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";
         let currentLevel = 1;
         let stepInLevel = 1;
