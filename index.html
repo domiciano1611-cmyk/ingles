@@ -326,56 +326,53 @@
         }
 
         async function fetchQuestion() {
-    // --- RESET DA INTERFACE (Limpa o conteúdo anterior) ---
-    document.getElementById('hint-box').style.display = 'none';
-    document.getElementById('q-text').innerText = "Sincronizando dados..."; 
-    const box = document.getElementById('options-box');
-    box.innerHTML = `
-        <div class="flex justify-center p-10 w-full col-span-full">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
-        </div>`;
-    // -------------------------------------------------------
+            // --- RESET DA INTERFACE ---
+            document.getElementById('hint-box').style.display = 'none';
+            document.getElementById('q-text').innerText = "Sincronizando dados..."; 
+            const box = document.getElementById('options-box');
+            box.innerHTML = `
+                <div class="flex justify-center p-10 w-full col-span-full">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+                </div>`;
+            // --------------------------
 
-    const phaseContext = phase === 1 ? "basic rooms (kitchen, bedroom, etc)" : "furniture and house objects (sofa, fridge, lamp, etc)";
-    const prompt = `You are a high-tech English Teacher for beginners. Topic: ${phaseContext}. Difficulty: CEFR A1. Instruction: Generate 1 unique question. Do NOT repeat these: [${usedQuestions.join(", ")}]. JSON format: {"q": "Question Text", "tr": "Tradução para Português do Brasil", "opts": ["Option 1", "Option 2", "Option 3"], "a": "Correct Option"}`;
-    
-    try {
-        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {"Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json"},
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{role: "system", content: prompt}],
-                response_format: {type: "json_object"},
-                temperature: 0.9
-            })
-        });
-        const data = await res.json();
-        const quiz = JSON.parse(data.choices[0].message.content);
-        
-        correctAns = quiz.a;
-        currentTranslation = quiz.tr;
-        usedQuestions.push(quiz.q); 
-        
-        // Atualiza o texto da nova pergunta
-        document.getElementById('q-text').innerText = quiz.q;
-        
-        // Limpa o spinner e insere as novas opções de resposta
-        box.innerHTML = "";
-        quiz.opts.forEach(o => {
-            const b = document.createElement('button');
-            b.className = "btn-option w-full p-5 text-left rounded-2xl font-medium text-slate-300 hover:text-cyan-400 transition-all";
-            b.innerText = o;
-            b.onclick = () => verify(o, b);
-            box.appendChild(b);
-        });
-        
-        document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
-    } catch(e) { 
-        // Em caso de erro, tenta buscar novamente automaticamente
-        fetchQuestion(); 
-    }
-}
+            const phaseContext = phase === 1 ? "basic rooms (kitchen, bedroom, etc)" : "furniture and house objects (sofa, fridge, lamp, etc)";
+            const prompt = `You are a high-tech English Teacher for beginners. Topic: ${phaseContext}. Difficulty: CEFR A1. Instruction: Generate 1 unique question. Do NOT repeat these: [${usedQuestions.join(", ")}]. JSON format: {"q": "Question Text", "tr": "Tradução para Português do Brasil", "opts": ["Option 1", "Option 2", "Option 3"], "a": "Correct Option"}`;
+            
+            try {
+                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {"Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [{role: "system", content: prompt}],
+                        response_format: {type: "json_object"},
+                        temperature: 0.9
+                    })
+                });
+                const data = await res.json();
+                const quiz = JSON.parse(data.choices[0].message.content);
+                
+                correctAns = quiz.a;
+                currentTranslation = quiz.tr;
+                usedQuestions.push(quiz.q); 
+                
+                document.getElementById('q-text').innerText = quiz.q;
+                
+                box.innerHTML = "";
+                quiz.opts.forEach(o => {
+                    const b = document.createElement('button');
+                    b.className = "btn-option w-full p-5 text-left rounded-2xl font-medium text-slate-300 hover:text-cyan-400 transition-all";
+                    b.innerText = o;
+                    b.onclick = () => verify(o, b);
+                    box.appendChild(b);
+                });
+                
+                document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
+            } catch(e) { 
+                fetchQuestion(); 
+            }
+        }
 
         function verify(sel, b) {
             const footer = document.getElementById('quiz-footer');
@@ -408,16 +405,19 @@
         }
 
         function unlockNextLevel() {
-            currentLevel++;
-            const nextNode = document.getElementById(`node-${currentLevel}`);
+            const nextNodeId = currentLevel + 1;
+            const nextNode = document.getElementById(`node-${nextNodeId}`);
+            
             if(nextNode) {
+                currentLevel++;
                 showCustomAlert("Sincronização Ativa", "Módulo neural descriptografado com sucesso.");
                 nextNode.classList.remove('locked');
                 nextNode.classList.add('current');
                 nextNode.innerHTML = '<i class="fas fa-microchip"></i>';
             } else {
-                if(phase === 1) startPhaseTwo();
-                else {
+                if(phase === 1) {
+                    startPhaseTwo();
+                } else {
                     triggerConfetti();
                     showCustomAlert("MISSÃO COMPLETA", "Você dominou todos os núcleos de dados!", "fa-trophy");
                 }
