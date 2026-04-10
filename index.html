@@ -25,13 +25,13 @@
             overflow-x: hidden; 
         }
 
-        /* --- ANIMAÇÃO DOS AVATARES --- */
+        /* --- ANIMAÇÃO DE FLUTUAÇÃO --- */
         .avatar-float {
             animation: float 3s ease-in-out infinite;
         }
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-12px); }
         }
 
         .sidebar-item { 
@@ -110,14 +110,6 @@
             padding: 20px;
         }
 
-        .btn-option {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            transition: all 0.2s;
-            padding: 1.25rem;
-            font-size: 0.95rem;
-        }
-
         .cyber-btn {
             background: var(--accent-purple);
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
@@ -143,12 +135,6 @@
             text-align: center;
             width: 100%;
             max-width: 400px;
-        }
-
-        .user-badge:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
         }
     </style>
 </head>
@@ -179,16 +165,11 @@
                 <i class="fas fa-database text-lg"></i> <span class="font-medium text-sm tracking-wide">MÓDULOS</span>
             </div>
         </div>
-
-        <div class="md:hidden">
-            <i class="fas fa-bars text-slate-400 text-xl"></i>
-        </div>
     </nav>
 
     <main class="flex-1 p-6 md:p-12 md:ml-64 flex flex-col items-center bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-purple-900/10 via-transparent to-transparent">
         
         <div class="w-full max-w-5xl flex flex-col md:flex-row justify-between items-center md:items-stretch gap-6 mb-8 md:mb-16">
-            
             <div class="unit-header flex-1 p-6 md:p-8 flex flex-row justify-between items-center gap-4 w-full">
                 <div>
                     <p id="section-tag" class="text-cyan-400 font-bold uppercase text-[9px] tracking-[0.3em] mb-1">SYSTEM READY / SEÇÃO 01</p>
@@ -221,9 +202,12 @@
         </div>
 
         <div class="max-w-2xl w-full relative">
-            <div class="absolute left-[-60px] top-[0px] avatar-float hidden md:block">
-                <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=happy&eyes=happy&mouth=smile01" class="w-16 h-16 opacity-80" alt="Start Avatar">
-                <p class="text-[8px] text-cyan-400 font-bold text-center mt-1 uppercase tracking-tighter">Start</p>
+            
+            <div class="absolute left-[-80px] top-[0px] avatar-float hidden md:block text-center">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center text-white shadow-lg overflow-hidden border border-white/20 mx-auto">
+                    <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Alpha&eyes=happy&mouth=smile01&backgroundColor=b6e3f4" class="w-10 h-10" alt="Avatar Início">
+                </div>
+                <p class="text-[9px] text-cyan-400 font-bold mt-2 uppercase tracking-widest">Início</p>
             </div>
 
             <div class="flex flex-col items-center py-4">
@@ -233,9 +217,11 @@
                 <div class="path-line"></div>
                 
                 <div class="relative w-full">
-                    <div class="absolute right-[20px] top-[-20px] avatar-float hidden md:block">
-                        <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=cowboy&sides=antenna01&eyes=builtIn&mouth=smile02" class="w-20 h-20" alt="Cowboy Avatar">
-                        <p class="text-[8px] text-purple-400 font-bold text-center mt-1 uppercase tracking-tighter">Midway</p>
+                    <div class="absolute right-[10px] top-[-30px] avatar-float hidden md:block text-center">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg overflow-hidden border border-white/20 mx-auto">
+                            <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Lucky&sides=antenna01&eyes=builtIn&mouth=smile02&backgroundColor=ffd5dc" class="w-12 h-12" alt="Avatar Cowboy">
+                        </div>
+                        <p class="text-[9px] text-purple-400 font-bold mt-2 uppercase tracking-widest">Evolução</p>
                     </div>
                     <div id="node-3" class="node locked md:-translate-x-8" onclick="startQuiz(3)"><i class="fas fa-lock"></i></div>
                 </div>
@@ -276,21 +262,16 @@
                     <div id="quiz-progress" class="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4] transition-all duration-700" style="width: 10%"></div>
                 </div>
             </div>
-            
             <div class="flex justify-between items-center mb-2">
                 <p class="text-cyan-400 text-[10px] font-bold tracking-[0.4em] uppercase">Neural Query:</p>
                 <button onclick="showTranslation()" class="text-cyan-400 hover:text-white transition-all">
                     <i class="fas fa-lightbulb mr-1 text-xs"></i><span class="text-[9px] font-bold uppercase tracking-widest">Dica</span>
                 </button>
             </div>
-
             <div id="hint-box" style="display:none; color:#06b6d4; margin-bottom:10px; font-size:14px;"></div>
-
             <h2 id="q-text" class="text-2xl md:text-4xl font-bold text-white mb-8 md:mb-12 leading-tight">Carregando...</h2>
-            
             <div id="options-box" class="grid gap-3 md:gap-4"></div>
         </div>
-        
         <div id="quiz-footer" class="w-full border-t border-white/10 p-6 md:p-10 flex justify-center translate-y-full transition-transform bg-black/90 backdrop-blur-xl fixed bottom-0 left-0">
             <div class="max-w-2xl w-full flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-3">
@@ -319,43 +300,16 @@
         }
 
         function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
-
-        function triggerConfetti() {
-            confetti({
-                particleCount: 100,
-                spread: 60,
-                origin: { y: 0.7 },
-                colors: ['#8b5cf6', '#06b6d4', '#ffffff']
-            });
-        }
-
-        function showTranslation() {
-            const hint = document.getElementById('hint-box');
-            hint.innerText = currentTranslation;
-            hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function startQuiz(levelId) {
-            if(levelId > currentLevel) return;
-            document.getElementById('quiz-overlay').style.display = 'flex';
-            stepInLevel = 1;
-            fetchQuestion();
-        }
-
-        function closeQuiz() {
-            document.getElementById('quiz-overlay').style.display = 'none';
-            document.getElementById('hint-box').style.display = 'none';
-            document.getElementById('quiz-footer').classList.add('translate-y-full');
-        }
+        function triggerConfetti() { confetti({ particleCount: 100, spread: 60, origin: { y: 0.7 }, colors: ['#8b5cf6', '#06b6d4', '#ffffff'] }); }
+        function showTranslation() { const hint = document.getElementById('hint-box'); hint.innerText = currentTranslation; hint.style.display = hint.style.display === 'block' ? 'none' : 'block'; }
+        function startQuiz(levelId) { if(levelId > currentLevel) return; document.getElementById('quiz-overlay').style.display = 'flex'; stepInLevel = 1; fetchQuestion(); }
+        function closeQuiz() { document.getElementById('quiz-overlay').style.display = 'none'; document.getElementById('hint-box').style.display = 'none'; document.getElementById('quiz-footer').classList.add('translate-y-full'); }
 
         async function fetchQuestion() {
             document.getElementById('hint-box').style.display = 'none';
             document.getElementById('q-text').innerText = "Sincronizando dados..."; 
             const box = document.getElementById('options-box');
-            box.innerHTML = `
-                <div class="flex justify-center p-10 w-full col-span-full">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
-                </div>`;
+            box.innerHTML = `<div class="flex justify-center p-10 w-full col-span-full"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div></div>`;
 
             const phaseContext = phase === 1 ? "basic rooms (kitchen, bedroom, etc)" : "furniture and house objects (sofa, fridge, lamp, etc)";
             const prompt = `You are a high-tech English Teacher for beginners. Topic: ${phaseContext}. Difficulty: CEFR A1. Instruction: Generate 1 unique question. Do NOT repeat these: [${usedQuestions.join(", ")}]. JSON format: {"q": "Question Text", "tr": "Tradução para Português do Brasil", "opts": ["Option 1", "Option 2", "Option 3"], "a": "Correct Option"}`;
@@ -373,13 +327,10 @@
                 });
                 const data = await res.json();
                 const quiz = JSON.parse(data.choices[0].message.content);
-                
                 correctAns = quiz.a;
                 currentTranslation = quiz.tr;
                 usedQuestions.push(quiz.q); 
-                
                 document.getElementById('q-text').innerText = quiz.q;
-                
                 box.innerHTML = "";
                 quiz.opts.forEach(o => {
                     const b = document.createElement('button');
@@ -388,11 +339,8 @@
                     b.onclick = () => verify(o, b);
                     box.appendChild(b);
                 });
-                
                 document.getElementById('quiz-progress').style.width = (stepInLevel * 20) + "%";
-            } catch(e) { 
-                fetchQuestion(); 
-            }
+            } catch(e) { fetchQuestion(); }
         }
 
         function verify(sel, b) {
@@ -417,12 +365,8 @@
 
         function nextStep() {
             document.getElementById('quiz-footer').classList.add('translate-y-full');
-            if(stepInLevel < 5) {
-                stepInLevel++;
-                fetchQuestion();
-            } else {
-                unlockNextLevel();
-            }
+            if(stepInLevel < 5) { stepInLevel++; fetchQuestion(); } 
+            else { unlockNextLevel(); }
         }
 
         function unlockNextLevel() {
@@ -433,34 +377,22 @@
                 nextNode.classList.remove('locked');
                 nextNode.classList.add('current');
                 nextNode.innerHTML = '<i class="fas fa-microchip"></i>';
-            } else {
-                if(phase === 1) startPhaseTwo();
-                else {
-                    triggerConfetti();
-                    showCustomAlert("MISSÃO COMPLETA", "Você dominou todos os núcleos de dados!", "fa-trophy");
-                }
-            }
+            } else if(phase === 1) { startPhaseTwo(); } 
+            else { triggerConfetti(); showCustomAlert("MISSÃO COMPLETA", "Você dominou todos os núcleos!", "fa-trophy"); }
             closeQuiz();
         }
 
         function startPhaseTwo() {
-            phase = 2;
-            currentLevel = 1; 
-            usedQuestions = []; 
+            phase = 2; currentLevel = 1; usedQuestions = []; 
             document.getElementById('section-tag').innerText = "SYSTEM UPDATED / SEÇÃO 02";
             document.getElementById('section-title').innerHTML = 'House Objects / <span class="text-slate-500 font-light italic">Objetos</span>';
             document.getElementById('data-bar').style.width = "70%";
             for(let i=1; i<=5; i++) {
                 let node = document.getElementById(`node-${i}`);
-                if(i === 1) {
-                    node.className = "node current";
-                    node.innerHTML = '<i class="fas fa-microchip"></i>';
-                } else {
-                    node.className = `node locked md:${i % 2 === 0 ? 'translate-x-12' : '-translate-x-8'}`;
-                    node.innerHTML = '<i class="fas fa-lock"></i>';
-                }
+                if(i === 1) { node.className = "node current"; node.innerHTML = '<i class="fas fa-microchip"></i>'; } 
+                else { node.className = `node locked md:${i % 2 === 0 ? 'translate-x-12' : '-translate-x-8'}`; node.innerHTML = '<i class="fas fa-lock"></i>'; }
             }
-            showCustomAlert("Fase 2 Iniciada", "Otimizando vocabulário: Móveis e Objetos.", "fa-sync-alt");
+            showCustomAlert("Fase 2 Iniciada", "Otimizando vocabulário.", "fa-sync-alt");
         }
     </script>
 </body>
